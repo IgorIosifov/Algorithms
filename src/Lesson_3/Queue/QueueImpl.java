@@ -3,12 +3,12 @@ package Lesson_3.Queue;
 public class QueueImpl<E> implements Queue<E> {
     private static final int DEFAULT_TAIL = -1;
     private static final int DEFAULT_HEAD = 0;
-    private E[] data;
+    public E[] data;
 
-    private int size;
+    public int size;
 
-    private int tail;
-    private int head;
+    public int tail;
+    public int head;
 
     @SuppressWarnings("unchecked")
     public QueueImpl(int maxSize) {
@@ -33,7 +33,7 @@ public class QueueImpl<E> implements Queue<E> {
         return true;
     }
 
-    private int lastIndex() {
+    public int lastIndex() {
         return data.length - 1;
     }
 
@@ -43,8 +43,8 @@ public class QueueImpl<E> implements Queue<E> {
         if (isEmpty()) {
             return null;
         }
-
         E removedValue = data[head++];
+
         if (head == data.length) {
             head = DEFAULT_HEAD;
         }
@@ -73,7 +73,7 @@ public class QueueImpl<E> implements Queue<E> {
     }
 
     public void print () {
-        for (int i = 0; i < data.length; i++) {
+        for (int i = head; i < size; i++) {
             System.out.println(data[i]);
         }
     }
