@@ -1,4 +1,4 @@
-package Lesson_3;
+package Lesson_3.Queue;
 
 public interface Queue<E> {
 
