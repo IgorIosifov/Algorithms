@@ -2,8 +2,7 @@ package Lesson_3.Dequeue;
 
 import Lesson_3.Queue.QueueImpl;
 
-public class DequeueImpl<E> extends QueueImpl<E> implements Dequeue<E>{
-    private static final int DEFAULT_TAIL = -1;
+public class DequeueImpl<E> extends QueueImpl<E> implements Dequeue<E> {
 
 
     public DequeueImpl(int maxSize) {
@@ -17,13 +16,24 @@ public class DequeueImpl<E> extends QueueImpl<E> implements Dequeue<E>{
             return false;
         }
 
-        data[++tail] = value;
-        size++;
-        if (tail == lastIndex()) {
-            tail = DEFAULT_TAIL;
+        if (head - 1 < 0) {
+            head = data.length;
         }
 
+        data[--head] = value;
+        size++;
+
         return true;
+    }
+
+    @Override
+    public boolean insertRight(E value) {
+        return super.insert(value);
+    }
+
+    @Override
+    public E removeLeft() {
+        return super.remove();
     }
 
 
@@ -32,12 +42,11 @@ public class DequeueImpl<E> extends QueueImpl<E> implements Dequeue<E>{
         if (isEmpty()) {
             return null;
         }
-        if (tail == size) {
-            tail = DEFAULT_TAIL;
+        if (tail < 0) {
+            tail = data.length - 1;
         }
-        E removedValue = data[tail--];
         size--;
-        return removedValue;
+        return data[tail--];
     }
 }
 
