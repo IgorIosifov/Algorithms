@@ -1,4 +1,4 @@
-package Lesson_4;
+package Lesson_4.LinkedLists;
 
 import Lesson_3.Queue.Queue;
 

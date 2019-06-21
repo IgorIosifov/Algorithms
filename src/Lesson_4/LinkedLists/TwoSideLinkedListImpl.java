@@ -1,4 +1,4 @@
-package Lesson_4;
+package Lesson_4.LinkedLists;
 
 public class TwoSideLinkedListImpl<E> extends SimpleLinkedListImpl<E> implements TwoSideLinkedList<E> {
 
