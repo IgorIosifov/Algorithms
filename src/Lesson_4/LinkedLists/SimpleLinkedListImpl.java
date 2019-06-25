@@ -1,6 +1,8 @@
 package Lesson_4.LinkedLists;
 
-public class SimpleLinkedListImpl<E> implements LinkedList<E> {
+
+
+public class SimpleLinkedListImpl<E> implements LinkedList<E>{
 
     static class Entry<E> {
 

@@ -1,6 +1,6 @@
 package Lesson_4.LinkedLists;
 
-public interface LinkedList <E>{
+public interface LinkedList <E> {
 
     void insertFirst (E value);
 

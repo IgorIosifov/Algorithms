@@ -28,6 +28,7 @@ public class TestsLinkedLists {
         Assert.assertTrue(linkedList.remove(3));
         Assert.assertFalse(linkedList.remove(5));
         linkedList.display();
+
     }
 
     @Test
