@@ -1,9 +1,17 @@
 package Lesson_6;
+
 import java.util.Stack;
+
 public class TreeImpl<E extends Comparable<? super E>> implements Tree<E> {
 
     private Node<E> root;
     private int size;
+    private int depth;
+    private int maxDepth;
+
+    public TreeImpl(int maxDepth) {
+        this.maxDepth = maxDepth;
+    }
 
     @Override
     public boolean add(E value) {
@@ -19,6 +27,12 @@ public class TreeImpl<E extends Comparable<? super E>> implements Tree<E> {
         Node<E> parent = nodeAndParent.parent;
 
         assert parent != null;
+
+        int level = parent.getLevel() + 1;
+        if (level > maxDepth) {
+            return false;
+        }
+
         if (parent.shouldBeLeft(value)) {
             parent.setLeftChild(newNode);
         } else {
@@ -60,8 +74,8 @@ public class TreeImpl<E extends Comparable<? super E>> implements Tree<E> {
         Node<E> successor = getSuccessor(removedNode);
         if (removedNode == root) {
             root = successor;
-        }else if  (parent.shouldBeLeft(removedNode.getValue())){
-            parent.setLeftChild(successor );
+        } else if (parent.shouldBeLeft(removedNode.getValue())) {
+            parent.setLeftChild(successor);
         } else {
             parent.setRightChild(successor);
         }
@@ -109,8 +123,8 @@ public class TreeImpl<E extends Comparable<? super E>> implements Tree<E> {
         }
     }
 
-    private boolean hasOnlyOneChildNode(Node<E> removedNode) {
-        return removedNode.getLeftChild() != null ^ removedNode.getRightChild() != null;
+    private boolean hasOnlyOneChildNode(Node<E> node) {
+        return node.getLeftChild() != null ^ node.getRightChild() != null;
     }
 
     @Override
@@ -171,11 +185,14 @@ public class TreeImpl<E extends Comparable<? super E>> implements Tree<E> {
     private NodeAndParent doFind(E value) {
         Node<E> parent = null;
         Node<E> current = root;
-
+        current.setLevel(1);
         while (current != null) {
-            if (current.getValue().equals(value)) {
-                return new NodeAndParent(current, parent);
+            if (parent != null){
+                current.setLevel(parent.getLevel()+1);
             }
+                if (current.getValue().equals(value)) {
+                    return new NodeAndParent(current, parent);
+                }
             parent = current;
             if (current.shouldBeLeft(value)) {
                 current = current.getLeftChild();
@@ -234,7 +251,29 @@ public class TreeImpl<E extends Comparable<? super E>> implements Tree<E> {
     }
 
 
+    public int getDepth() {
+        return depth;
+    }
+
+    @Override
+    public boolean isBalanced() {
+        return isBalanced(root);
+    }
+
+    private boolean isBalanced(Node node) {
+        return (node == null) ||
+                isBalanced(node.getLeftChild()) &&
+                        isBalanced(node.getRightChild()) &&
+                        Math.abs(height(node.getLeftChild()) - height(node.getRightChild())) <= 1;
+    }
+
+    private int height(Node node) {
+        return node == null ? 0 : 1 + Math.max(height(node.getLeftChild()), height(node.getRightChild()));
+    }
+
+
     private class NodeAndParent {
+
         Node<E> current;
         Node<E> parent;
 
@@ -243,4 +282,5 @@ public class TreeImpl<E extends Comparable<? super E>> implements Tree<E> {
             this.parent = parent;
         }
     }
+
 }
