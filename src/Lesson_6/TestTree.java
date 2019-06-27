@@ -9,7 +9,7 @@ public class TestTree {
     @Test
     public void test1() {
 
-        Tree<Integer> tree = new TreeImpl<>(4);
+        Tree<Integer> tree = new TreeImpl<>();
         tree.add(60);
         tree.add(50);
         tree.add(66);
@@ -30,7 +30,7 @@ public class TestTree {
     @Test
     public void test2() {
 
-        Tree<Integer> tree = new TreeImpl<>(4);
+        Tree<Integer> tree = new TreeImpl<>();
         tree.add(60);
         tree.add(25);
         tree.add(66);
