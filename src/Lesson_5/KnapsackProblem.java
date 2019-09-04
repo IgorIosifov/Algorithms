@@ -5,66 +5,116 @@ import java.util.*;
 public class KnapsackProblem {
 
 
-    private int totalLootCost;
+    private int MaxLootCost;
     private float totalLootWeight;
     private final float capacity = 3.0f;
 
-    Items notebook = new Items("notebook", 1000, 1.0f);
-    Items smartphone = new Items("smartphone", 1000, 0.5f);
-    Items rareCoin = new Items("rare coin", 500, 0.1f);
-    Items camera = new Items("camera", 1800, 2.0f);
-    Items goldChain = new Items("gold chane", 2000, 0.1f);
+    private Items notebook = new Items("notebook", 1000, 1.0f);
+    private Items smartphone = new Items("smartphone", 1000, 1.0f);
+    private Items rareCoin = new Items("rare coin", 1000, 1.0f);
+    private Items camera = new Items("camera", 1000, 1.0f);
+    private Items goldChain = new Items("gold chane", 1000, 1.0f);
 
     Items[] items = {notebook, smartphone, rareCoin, camera, goldChain};
-    List<Items> totalLootSet = new ArrayList<>();
-    List<List<Items>> possibleCombinations = new ArrayList<>();
+    List<Items> lootSet = new ArrayList<>();
+    List<List<Items>> possibleCombinations = new ArrayList<>(items.length*items.length);
+
 
     private void solvingKnapsackProblem() {
-
         for (int i = 0; i < items.length; i++) {
-
             for (int z = 0; z < items.length - 1; z++) {
+                lootSet.clear();
                 oneThingCase(z);
-
+                if (lootSetIsUnique()) {
+                    switch (costIsMax()) {
+                        case "costIsMax":
+                            possibleCombinations.clear();
+                            addToPossibleCombinations();
+                            break;
+                        case "costIsEqual":
+                            addToPossibleCombinations();
+                            break;
+                        default: {
+                            break;
+                        }
+                    }
+                }
                 shift(4);
-//                checkUniqueLootSet();
-                resultCost();
-                totalLootSet.clear();
             }
             shift(5);
         }
-        System.out.println(possibleCombinations.get(1).get(1).getName());
-
+        display();
     }
 
-    private void checkUniqueLootSet() {
+    private void addToPossibleCombinations() {
+        // this thing just to fill the buffer so Collections.copy() can work properly
+        List<Items> buffer = new ArrayList<>(lootSet.size());
+        for (int i = 0; i < lootSet.size(); i++) {
+            buffer.add(new Items(null, 0, 0));
+        }
+        Collections.copy(buffer, lootSet);
+        possibleCombinations.add(buffer);
+    }
 
+    private boolean lootSetIsUnique() {
+        lootSetSortedByName(lootSet);
+        if (!possibleCombinations.isEmpty()) {
+            for (int i = 0; i < possibleCombinations.size(); i++) {
+                int uniqueCounter = 0;
+                for (int j = 0; j < possibleCombinations.get(i).size(); j++) {
+                    if (!lootSet.get(j).getName().equals(possibleCombinations.get(i).get(j).getName())) {
+                        break;
+                    } else {
+                        uniqueCounter++;
+                        if (uniqueCounter == lootSet.size()) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+        return true;
+    }
 
+    private List<Items> lootSetSortedByName(List<Items> lootSet) {
         List<String> currentNames = new ArrayList<>();
-        for (int j = 0; j < totalLootSet.size(); j++) {
-            currentNames.add(totalLootSet.get(j).getName());
+        for (int j = 0; j < lootSet.size(); j++) {
+            currentNames.add(lootSet.get(j).getName());
         }
         Collections.sort(currentNames);
-        for (int i = 0; i < possibleCombinations.size(); i++) {
-            if (!currentNames.equals(possibleCombinations.get(i))) {
-
+        List<Items> sortedLootSet = new ArrayList<>();
+        for (int i = 0; i < currentNames.size(); i++) {
+            for (int j = 0; j < lootSet.size(); j++) {
+                if (lootSet.get(j).getName().equals(currentNames.get(i))) {
+                    sortedLootSet.add(lootSet.get(j));
+                }
             }
         }
-
+        Collections.copy(lootSet, sortedLootSet);
+        sortedLootSet.clear();
+        return lootSet;
 
     }
 
 
     private void display() {
-        System.out.println("------");
-        for (int i = 0; i < items.length; i++) {
-            System.out.println(items[i].getName());
+        System.out.println(" Expected amount of possible combinations " +
+                "is n! / (k! * (n-k)!), where n = 5, k= 3;" +
+                "5!/(3!*(5-3)! = 10");
+        System.out.println(possibleCombinations.size());
+        for (int i = 0; i < possibleCombinations.size(); i++) {
+            System.out.println("set #" + i);
+            for (int j = 0; j < possibleCombinations.get(i).size(); j++) {
+                System.out.print(possibleCombinations.get(i).get(j).getName() + " ");
+            }
+            System.out.println(resultWeight(possibleCombinations.get(i)));
+            System.out.println(MaxLootCost);
         }
-        System.out.println("------");
     }
 
-    private void shift(int lenght) {
-        int pos = items.length - lenght;
+    private void shift(int length) {
+        int pos = items.length - length;
         Items temp = items[pos];
         for (int i = pos + 1; i < items.length; i++) {
             items[i - 1] = items[i];
@@ -73,15 +123,13 @@ public class KnapsackProblem {
     }
 
     private void oneThingCase(int i) {
-
-
         while (i < items.length) {
-            totalLootSet.add(items[i]);
-            if (resultWeight() <= capacity) {
-                i++;
-                oneThingCase(i);
+            lootSet.add(items[i]);
+            if (resultWeight(lootSet) <= capacity) {
+                oneThingCase(++i);
+
             } else {
-                totalLootSet.remove(items[i]);
+                lootSet.remove(items[i]);
                 oneThingCase(++i);
             }
             break;
@@ -89,48 +137,28 @@ public class KnapsackProblem {
 
     }
 
-
-    private void result() {
-        for (int i = 0; i <possibleCombinations.size() ; i++) {
-                resultNames(possibleCombinations.get(i));
-            }
-
-            System.out.println("total cost =" + resultCost() + "$ ; " + "total weight = " + resultWeight() + " kg.");
-            for (Items it : totalLootSet) {
-                System.out.println(it.getName());
-
-            }
-        }
-
-
-    private int resultCost() {
+    private String costIsMax() {
         int currentLootCost = 0;
-        for (Items it : totalLootSet) {
+        for (Items it : lootSet) {
             currentLootCost += it.getCost();
         }
-        if (currentLootCost>=totalLootCost){
-            totalLootCost = currentLootCost;
-            possibleCombinations.add(totalLootSet);
+        if (currentLootCost > MaxLootCost) {
+            MaxLootCost = currentLootCost;
+            return "costIsMax";
         }
-        return totalLootCost;
+        if (currentLootCost == MaxLootCost) {
+            return "costIsEqual";
+        } else return "costIsLess";
     }
 
-    private float resultWeight() {
+    private float resultWeight(List <Items> lootSet) {
         totalLootWeight = 0;
-        for (Items it : totalLootSet) {
+        for (Items it : lootSet) {
             totalLootWeight += it.getWeight();
         }
         return totalLootWeight;
     }
 
-    private void resultNames(List<Items> totalLootSet) {
-            StringBuilder resultNames=null;
-        for (int i = 0; i < totalLootSet.size(); i++) {
-            resultNames.append(totalLootSet.get(i).getName());
-            resultNames.append(";");
-        }
-        System.out.println(resultNames);
-    }
 
 
     public static void main(String[] args) {

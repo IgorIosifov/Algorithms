@@ -12,6 +12,18 @@ public class Items {
         this.weight = weight;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCost(int cost) {
+        this.cost = cost;
+    }
+
+    public void setWeight(float weight) {
+        this.weight = weight;
+    }
+
     public String getName() {
         return name;
     }
